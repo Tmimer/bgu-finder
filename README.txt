@@ -18,10 +18,9 @@ Install on the S22 Ultra
 Open the site in Chrome -> menu -> "Install app" / "Add to Home screen".
 After the first load it works offline.
 
-Building coordinates (for "closest" sorting)
-The scraper fills the `buildings` table with building numbers only. Add lat/lon, e.g. with DB Browser for SQLite:
-  UPDATE buildings SET lat = 31.2635, lon = 34.8040 WHERE building = 26;
-Buildings without coordinates are listed after the ones that have them.
+Building positions (for "closest" sorting)
+Run building_positions.sql once on the real bgu_rooms.db (positions are pixel spots on the campus map, no GPS).
+Buildings without a position are listed after the ones that have one.
 
 Test locally
   python -m http.server 8000      (run inside this folder), then open http://localhost:8000

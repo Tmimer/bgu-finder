@@ -30,7 +30,7 @@
   function distText(d) {
     if (d == null) return "";
     if (d === 0) return "באותו בניין";
-    return d < 1000 ? d + " מ׳" : (d / 1000).toFixed(1) + " ק״מ";
+    return "~" + d + " מ׳";
   }
 
   function render() {

@@ -10,16 +10,13 @@
     const h = Math.floor(min / 60), m = min % 60;
     return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
   }
+  const M_PER_PX = 1.5; // rough scale of the campus map
   function meters(a, b) {
-    const R = 6371000, rad = Math.PI / 180;
-    const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
-    const h = Math.sin(dLat / 2) ** 2 +
-      Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(h));
+    return Math.hypot(a.x - b.x, a.y - b.y) * M_PER_PX;
   }
 
   const SQL_FREE = `
-    SELECT r.building AS building, r.room AS room, b.lat AS lat, b.lon AS lon,
+    SELECT r.building AS building, r.room AS room, b.x AS x, b.y AS y,
       (SELECT MIN(l.start) FROM lessons l
          WHERE l.room_id = r.room_id AND l.day = :day AND l.start >= :end) AS next_start
     FROM rooms r LEFT JOIN buildings b ON b.building = r.building
@@ -46,11 +43,11 @@
     st.free();
 
     let here = null;
-    for (const r of rows) if (r.building === building && r.lat != null) { here = r; break; }
+    for (const r of rows) if (r.building === building && r.x != null) { here = r; break; }
     if (!here) {
-      const s2 = db.prepare("SELECT lat, lon FROM buildings WHERE building = ?");
+      const s2 = db.prepare("SELECT x, y FROM buildings WHERE building = ?");
       s2.bind([building]);
-      if (s2.step()) { const o = s2.getAsObject(); if (o.lat != null) here = o; }
+      if (s2.step()) { const o = s2.getAsObject(); if (o.x != null) here = o; }
       s2.free();
     }
 
@@ -58,7 +55,7 @@
       r.freeUntil = r.next_start != null ? r.next_start : Math.max(DAY_END, end);
       r.freeFor = r.freeUntil - start;
       if (r.building === building) r.dist = 0;
-      else if (here && r.lat != null) r.dist = Math.round(meters(here, r));
+      else if (here && r.x != null) r.dist = Math.round(meters(here, r) / 10) * 10;
       else r.dist = null; // unknown
     }
     // unknown distance sorts after known ones, ordered by building-number gap as a weak hint

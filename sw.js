@@ -1,6 +1,6 @@
 // Offline-first: serve from cache, refresh the cache in the background.
 // Bump VERSION when you replace bgu_rooms.db or any app file.
-const VERSION = "v1";
+const VERSION = "v3";
 const CACHE = "bgu-finder-" + VERSION;
 const FILES = [
   "./", "index.html", "app.js", "finder.js", "manifest.webmanifest", "bgu_rooms.db",
