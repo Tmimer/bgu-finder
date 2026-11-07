@@ -1,0 +1,17 @@
+{
+  "name": "כיתה פנויה – BGU",
+  "short_name": "כיתה פנויה",
+  "description": "מוצא כיתות פנויות באוניברסיטת בן-גוריון, גם בלי אינטרנט",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ef",
+  "theme_color": "#F26B1D",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
