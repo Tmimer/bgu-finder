@@ -9,11 +9,14 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
   };
 
+  let isCustomTime = false;
+
   function nowParts() {
     const n = new Date();
     return { day: n.getDay(), min: n.getHours() * 60 + n.getMinutes() };
   }
   function setNow() {
+    isCustomTime = false;
     const { day, min } = nowParts();
     const end = Math.min(min + 120, 23 * 60 + 59);
     $("day").value = String(day);
@@ -108,19 +111,47 @@
     $("building").value = String(bs.includes(saved) ? saved : bs[0]);
     setSort(store.get("sort", "nearest") === "longest" ? "longest" : "nearest");
 
-    ["building", "day", "start", "end"].forEach((id) => $(id).addEventListener("change", rerun));
+    $("building").addEventListener("change", rerun);
+
+    ["day", "end"].forEach((id) => $(id).addEventListener("change", () => {
+      isCustomTime = true;
+      rerun();
+    }));
+
+    $("start").addEventListener("change", () => {
+      isCustomTime = true;
+      const s = Finder.toMin($("start").value);
+      if (!isNaN(s)) {
+        const e = Math.min(s + 120, 23 * 60 + 59);
+        $("end").value = Finder.fmt(e);
+      }
+      rerun();
+    });
+
     $("s-nearest").onclick = () => setSort("nearest");
     $("s-longest").onclick = () => setSort("longest");
     $("go").onclick = () => { setNow(); rerun(); window.scrollTo({ top: 0, behavior: "smooth" }); };
     $("more").onclick = () => { shown += PAGE; render(); };
 
     // refresh to "now" when the app comes back to the foreground
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) { setNow(); rerun(); } });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && !isCustomTime) {
+        setNow();
+        rerun();
+      }
+    });
   }
 
   init().catch((e) => { $("summary").textContent = "שגיאה בטעינת הנתונים"; console.error(e); });
 
   if ("serviceWorker" in navigator) {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
     window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
 })();

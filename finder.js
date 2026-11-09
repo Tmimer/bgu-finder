@@ -10,7 +10,7 @@
     const h = Math.floor(min / 60), m = min % 60;
     return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
   }
-  const M_PER_PX = 1; // building positions are already in metres
+  const M_PER_PX = 1.5; // rough scale of the campus map
   function meters(a, b) {
     return Math.hypot(a.x - b.x, a.y - b.y) * M_PER_PX;
   }
